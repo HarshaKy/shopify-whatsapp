@@ -52,9 +52,9 @@ class Index extends React.Component {
             whatsappNumber: this.state.whatsappNumber,
             whatsappApiKey: this.state.whatsappApiKey
         })
-        console.log('submission', this.state)
-        var res = await api.getHello()
-        console.log('response', res)
+        // console.log('submission', this.state)
+        var res = await api.setWhatsappInfo(this.state.whatsappNumber, this.state.whatsappApiKey)
+        console.log('response', res.data)
     }
 
     handleChange = (field) => {
