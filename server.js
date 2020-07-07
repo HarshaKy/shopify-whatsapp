@@ -5,8 +5,11 @@ const next = require('next')
 const { default: createShopifyAuth } = require('@shopify/koa-shopify-auth')
 const { verifyRequest } = require('@shopify/koa-shopify-auth')
 const session = require('koa-session')
+const queryString = require('query-string')
 
 dotenv.config()
+const { default: graphQLProxy } = require('@shopify/koa-shopify-graphql-proxy')
+const { ApiVersion } = require('@shopify/koa-shopify-graphql-proxy')
 
 const port = parseInt(process.env.PORT, 10) || 3000
 const dev = process.env.NODE_ENV !== 'production'
@@ -32,6 +35,7 @@ app.prepare().then(() => {
 		})
 	)
 
+	server.use(graphQLProxy({ version: ApiVersion.April20 }))
 	server.use(verifyRequest())
 	server.use(async (ctx) => {
 		await handle(ctx.req, ctx.res)

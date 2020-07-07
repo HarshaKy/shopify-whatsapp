@@ -5,14 +5,17 @@ const api = axios.create({
 })
 
 export const getHello = () => api.get('/')
-export const setWhatsappInfo = (number, apiKey) => {
+export const setWhatsappInfo = (number, apiKey, shopId) => {
     return new Promise(async (resolve, reject) => {
         try {
             api.post('/whatsappInfo', {
+                shopId: shopId,
                 whatsappNumber: number,
                 whatsappApiKey: apiKey
             }).then((response) => {
                 resolve(response)
+            }, (err) => {
+                reject(err)
             })
         } catch (error) {
             reject(error)
@@ -20,9 +23,30 @@ export const setWhatsappInfo = (number, apiKey) => {
     })
 }
 
+export const getShop = (shopHost) => api.get(`shops?shopHost=${shopHost}`)
+
+export const createShop = (shop) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            api.post('/shop', {
+                shop
+            }).then((response) => {
+                resolve(response)
+            }, (err) => {
+                reject(err)
+            })
+        } catch (error) {
+            reject(err)
+        }
+    })
+}
+
+
 const apis = {
     getHello,
-    setWhatsappInfo
+    setWhatsappInfo,
+    getShop,
+    createShop
 }
 
 export default apis

@@ -3,6 +3,17 @@ import Head from 'next/head'
 import { AppProvider } from '@shopify/polaris'
 import '@shopify/polaris/styles.css'
 import translations from '@shopify/polaris/locales/en.json'
+import ApolloClient from 'apollo-boost'
+import { ApolloProvider } from 'react-apollo'
+
+const client = new ApolloClient({
+	fetchOptions: {
+		credentials: 'include',
+	  	headers: {
+			'Content-Type': 'application/graphql',
+	  	}
+	}
+})
 
 class MyApp extends App {
     render() {
@@ -14,7 +25,9 @@ class MyApp extends App {
                     <meta charSet="utf-8" />
                 </Head>
                 <AppProvider i18n={translations}>
-                    <Component {...pageProps} />
+                    <ApolloProvider client={client}>
+                        <Component {...pageProps} />
+                    </ApolloProvider>
                 </AppProvider>
             </React.Fragment>
         )
