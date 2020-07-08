@@ -6,9 +6,7 @@ const bodyParser = require('body-parser')
 const _ = require('lodash')
 
 let { mongoose } = require('./db/mongoose')
-let { WhatsappCredentials } = require('./models/shopWhatsappCred')
 let { Shop } = require('./models/shop')
-const shop = require('./models/shop')
 
 var app = express()
 app.use(cors())
@@ -42,12 +40,21 @@ app.post('/shop', (req, res) => {
 })
 
 app.post('/whatsappInfo', (req, res) => {
-    let body = req.body
-    let whatsappCred = new WhatsappCredentials(body)
-    whatsappCred.save().then((doc) => {
-        res.send(doc)
+    let body = {
+        whatsappCredentials: {
+            whatsappNumber: req.body.whatsappNumber,
+            whatsappApiKey: req.body.whatsappApiKey
+        }
+    }
+    console.log(body)
+    let shopId = req.body.shopId
+    let filter = {_id: shopId}
+    
+    Shop.findOneAndUpdate(filter, body, {new: true}).then((doc) => {
+        console.log(doc)
+        res.status(200).send(doc)
     }, (err) => {
-        res.status(400).send(err)
+        res.status(404).send(err)
     })
 })
 

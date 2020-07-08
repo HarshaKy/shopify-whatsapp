@@ -1,124 +1,88 @@
 import WhatsappInformation from '../components/whatsappInfo'
 import gql from 'graphql-tag'
 import { Query } from 'react-apollo'
-import { Page, Card } from '@shopify/polaris'
+import { Page, Card, Navigation, Frame } from '@shopify/polaris'
 import api from '../api'
+import TemplatePicker from '../components/template-picker'
+import SideNavigation from '../components/Navigation'
+import BroadcastHistory from '../components/broadcast-history'
+import { orderDelivered } from '../api/dropdownOptions'
 
-const GET_STORE_NAME = gql`
-{
-    shop {
-      url
-      name
-      email
-      primaryDomain{
-        host
-      }
-    }
-  }
-`
+
 class Index extends React.Component {
-    constructor (props) {
+
+    constructor(props) {
         super(props)
-        this.shopExists = this.shopExists.bind(this)
-        this.handlechange = this.handlechange.bind(this)
+
+        this.handleNavigation = this.handleNavigation.bind(this)
+
         this.state = {
-            shopHost: null,
-            shopExists: false,
-            shopUrl: null,
-            shopEmail: null,
-            shopName: null,
-            shopDb: {}
+            componentsToRender: {
+                home: false,
+                templatePicker: false,
+                broadcastHistory: false,
+                whatsappInfo: false
+            }
         }
     }
 
-    // getInitialState() {
-    //     return {data: null}
-    // }
-    handlechange = (shop) => {
-        this.setState(() => ({
-            shopHost: shop.primaryDomain.host,
-            shopUrl: shop.url,
-            shopName: shop.name,
-            shopEmail: shop.email
-        }))
+    handleNavigation = (component) => {
+        this.setState({ componentsToRender: { [component]: true }})
+        console.log(this.state)
     }
 
-    shopExists = async (shopHost) => {
-        var res = await api.getShop(shopHost)
-        if(res.data) {return res.data} else {return false}
-    }
-
-    createShop = async () => {
-        console.log('create shop', this.state)
-        let shop = {
-            shopUrl: this.state.shopUrl,
-            shopHost: this.state.shopHost,
-            shopName: this.state.shopName,
-            shopEmail: this.state.shopEmail
-        }
-
-        await api.createShop(shop).then((res) => {
-            console.log('created shop', res)
-            return res
-        }, (err) => {
-            return err
-        })
-
-        this.setState({
-            shopExists: true,
-            shopDb: res
-        })
-        
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        console.log('component update')
-        if (prevState.shopHost !== this.state.shopHost) {
-            this.shopExists(this.state.shopHost).then(function(res) {
-                if(!res) {
-                    this.createShop()
-                } else {
-                    console.log('shop exists', res)
-                    this.setState({
-                        shopExists: true,
-                        shopDb: res
-                    })
-                }
-                
-            }.bind(this))
-        }
-        
-    }
-    
     render() {
+        // choose what to render
+        console.log(this.state)
+        let itemToRender
+        console.log('hello from index', this.props)
+        if (!this.props.shop.shopDb.whatsappCredentials) {
+            itemToRender = <WhatsappInformation shop={this.props.shop.shopDb}/>
+        } else if (this.state.componentsToRender.home) {
+            itemToRender = <div>Home Page</div>
+        } else if (this.state.componentsToRender.templatePicker) {
+            console.log(orderDelivered)
+            itemToRender = <TemplatePicker shop={this.props.shop.shopDb} />
+        } else if (this.state.componentsToRender.broadcastHistory) {
+            itemToRender = <BroadcastHistory shop={this.props.shop.shopDb}/>
+        } else if (this.state.componentsToRender.whatsappInfo) {
+            itemToRender = <WhatsappInformation shop={this.props.shop.shopDb} />
+        } 
+        
+        else {
+            itemToRender = <div>Home Page</div>
+        }
 
         return (
+            <Frame
+                navigation={
+                    <Navigation location="/">
+                        <Navigation.Section
+                            items={[
+                                {
+                                    label: 'Home',
+                                    onClick: () => this.handleNavigation('home')
+                                },
+                                {
+                                    onClick: () => this.handleNavigation('templatePicker'),
+                                    label: 'Template Picker'
+                                },
+                                {
+                                    onClick: () => this.handleNavigation('broadcastHistory'),
+                                    label: 'Broadcast History'
+                                },
+                                {
+                                    onClick: () => this.handleNavigation('whatsappInfo'),
+                                    label: 'WhatsApp Details'
+                                }
+                            ]}
+                        />
+                    </Navigation>}
+            >
             <Page>
-                <Query query={GET_STORE_NAME}>
-                    {({data, loading, error}) => {
-                        if (loading) return <div>Loading...</div>
-                        if (error) return <div>{error.message}</div>
-                        let shopHost = data.shop.primaryDomain.host
-                        
-                        console.log('state 1', this.state)
-                        
-                        if (shopHost !== this.state.shopHost) {
-                            this.handlechange(data.shop)
-                        }
-                        
-                        console.log('state 2', this.state)
-                        
-                        if(this.state.shopExists) {
-                            console.log(this.state)
-                            return (
-                                <WhatsappInformation shop={this.state.shopDb}/>
-                            )
-                        } else {
-                            return <div>Loading...</div>
-                        }
-                    }}
-                </Query>
+                {itemToRender}
             </Page>
+            </Frame>
         )
     }
 }

@@ -14,6 +14,10 @@ const Shop = mongoose.model('Shop', {
     },
     shopEmail: {
         type: String
+    },
+    whatsappCredentials: {
+        whatsappNumber: {type: String},
+        whatsappApiKey: {type: String}
     }
 })
 

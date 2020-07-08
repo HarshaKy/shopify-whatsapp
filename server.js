@@ -8,6 +8,7 @@ const session = require('koa-session')
 const queryString = require('query-string')
 
 dotenv.config()
+const Router = require('koa-router')
 const { default: graphQLProxy } = require('@shopify/koa-shopify-graphql-proxy')
 const { ApiVersion } = require('@shopify/koa-shopify-graphql-proxy')
 
@@ -20,6 +21,7 @@ const { SHOPIFY_API_KEY, SHOPIFY_API_SECRET_KEY } = process.env
 
 app.prepare().then(() => {
 	const server = new Koa()
+	const router = new Router()
 	server.use(session({ secure: true, sameSite: 'none' }, server))
 	server.keys = [SHOPIFY_API_SECRET_KEY]
 	
@@ -30,19 +32,26 @@ app.prepare().then(() => {
 			scopes: ['read_products', 'write_products'],
 			afterAuth(ctx) {
 				const { shop, accessToken } = ctx.session
+				ctx.cookies.set('shopOrigin', shop, {
+					httpOnly: false,
+					secure: true,
+					sameSite: 'none'
+				})
 				ctx.redirect('/')
 			}
 		})
 	)
 
 	server.use(graphQLProxy({ version: ApiVersion.April20 }))
-	server.use(verifyRequest())
-	server.use(async (ctx) => {
+
+	router.get('/(.*)', verifyRequest(), async (ctx) => {
 		await handle(ctx.req, ctx.res)
 		ctx.respond = false
 		ctx.res.statusCode = 200
-		return
 	})
+
+	server.use(router.allowedMethods())
+	server.use(router.routes())
 
 	server.listen(port, () => {
 		console.log(`Server running on port ${port}`)

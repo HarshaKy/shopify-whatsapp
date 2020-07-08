@@ -17,7 +17,7 @@ class WhatsappInformation extends React.Component {
     render() {
         const { whatsappNumber, whatsappApiKey } = this.state
         const app = this.context
-        console.log('props', this.props.shop._id)
+        console.log('props', this.props)
         
         const handleSubmit = async () => {
             if (this.state.whatsappApiKey && this.state.whatsappNumber) {
