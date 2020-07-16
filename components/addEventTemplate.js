@@ -45,12 +45,26 @@ class EventTemplateConnector extends React.Component {
 		this.setState({ 
 			saveButtonDisabledStatus: false, 
 			templateText: selectedTemplateText, 
-			templateNameSelected: newValue
+			templateNameSelected: newValue,
+			variables: [], 
+			parameters: {}
 		})
 	}
 
 	saveEventTemplate = () => {
-		console.log('saving', this.state)
+		let shopId = this.props.shop._id
+	
+		let data = {
+			eventName: this.state.eventSelected,
+            templateName: this.state.templateNameSelected,
+            templateText: this.state.templateText,
+            parameters: this.state.parameters
+		}
+
+		console.log('data', data)
+		console.log('shopid', shopId)
+
+		api.setEventTemplate(data, shopId)
 	}
 
 	
@@ -100,14 +114,18 @@ class EventTemplateConnector extends React.Component {
 								{
 									this.state.variables.map((variable) => {
 										return (
-											<Select 
-												label={variable}
-												key={variable}
-												options={shopifyFields}
-												value={this.state.parameters[variable]}
-												placeholder="Select a Shopify variable"
-												onChange={handleVariableValue(variable)}
-											/>
+											<div key={variable}>
+												<Select 
+													label={variable}
+													labelInline
+													key={variable}
+													options={shopifyFields}
+													value={this.state.parameters[variable]}
+													placeholder="Select a Shopify variable"
+													onChange={handleVariableValue(variable)}
+												/>
+												<br></br>
+											</div>
 										)
 									})
 								}

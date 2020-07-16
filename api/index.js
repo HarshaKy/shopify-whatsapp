@@ -82,7 +82,24 @@ export const getTemplateVariables = (templateText) => {
                 reject(err)
             })
         } catch (err) {
-            console.log(err)
+            reject(err)
+        }
+    })
+}
+
+export const setEventTemplate = (data, shopId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            api.post('/eventTemplate', {
+                data,
+                shopId
+            }).then((res) => {
+                resolve(res)
+            }, (err) => {
+                reject(err)
+            })
+        } catch (err) {
+            reject(err)
         }
     })
 }
@@ -93,7 +110,8 @@ const apis = {
     getShop,
     createShop,
     setTemplateChoices,
-    getTemplateVariables
+    getTemplateVariables,
+    setEventTemplate
 }
 
 export default apis

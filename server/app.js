@@ -9,6 +9,7 @@ const engine = new Liquid.Engine()
 
 let { mongoose } = require('./db/mongoose')
 let { Shop } = require('./models/shop')
+let { EventsTemplates } = require('./models/EventsTemplates')
 
 var app = express()
 app.use(cors())
@@ -105,6 +106,58 @@ app.post('/templateText', (req, res) => {
                 res.status(200).json([])
             }
         })
+})
+
+app.post('/eventTemplate', async (req, res) => {
+    // console.log(req.body.data, req.body.shopId)
+
+    let filter = {shopId: req.body.shopId, "events.eventName": req.body.data.eventName}
+
+    let doc = await EventsTemplates.findOne({shopId: req.body.shopId})
+    
+    if(doc) {
+        console.log('doc exists')
+        doc = await EventsTemplates.findOne(filter)
+
+        if(doc) {
+            console.log('event exists, updating event')
+
+            EventsTemplates.findOneAndUpdate(filter, {
+                "$set": {
+                    "events.$.templateName": req.body.data.templateName,
+                    "events.$.templateText": req.body.data.templateText,
+                    "events.$.parameters": req.body.data.parameters
+                }
+            }, {new: true}).then((result) => {
+                console.log(result)
+                res.status(200).json(result)
+            })
+
+        } else {
+            console.log('event does not exist, adding event')
+
+            await EventsTemplates.findOneAndUpdate({shopId: req.body.shopId}, {
+                "$push": {events: req.body.data}
+            }, {new: true}).then((result) => {
+                console.log(result)
+                res.status(200).json(result)
+            })
+        }
+    } else {
+        console.log('doc doesnt exist, creating one')
+        let newDoc = {
+            shopId: req.body.shopId,
+            events: [req.body.data]
+        }
+        
+        eventsTemplates = new EventsTemplates(newDoc)
+        eventsTemplates.save().then((doc) => {
+            res.status(200).json(doc)
+        }, (err) => {
+            res.status(404).send(err)
+        })
+    }
+    
 })
 
 app.listen(8000, () => {
