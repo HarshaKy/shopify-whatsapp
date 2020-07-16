@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { reject } from 'lodash'
 
 const api = axios.create({
     baseURL: 'http://localhost:8000'
@@ -23,7 +24,19 @@ export const setWhatsappInfo = (number, apiKey, shopId) => {
     })
 }
 
-export const getShop = (shopHost) => api.get(`shops?shopHost=${shopHost}`)
+export const getShop = (shopHost) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            api.get(`shops?shopHost=${shopHost}`).then((res) => {
+                resolve(res)
+            }, (err) => {
+                reject(err)
+            })
+        } catch (error) {
+            reject(error)
+        }
+    })
+}
 
 export const createShop = (shop) => {
     return new Promise(async (resolve, reject) => {
@@ -41,12 +54,46 @@ export const createShop = (shop) => {
     })
 }
 
+export const setTemplateChoices = (shop, templateChoicesFromClient) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            api.post('/templateChoices', {
+                templateChoicesFromClient,
+                shop
+            }).then((res) => {
+                resolve(res)
+            }, (err) => {
+                reject(err)
+            })
+        } catch (error) {
+            reject(error)
+        }
+    })
+}
+
+export const getTemplateVariables = (templateText) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            api.post('/templateText', {
+                templateText
+            }).then((res) => {
+                resolve(res)
+            }, (err) => {
+                reject(err)
+            })
+        } catch (err) {
+            console.log(err)
+        }
+    })
+}
 
 const apis = {
     getHello,
     setWhatsappInfo,
     getShop,
-    createShop
+    createShop,
+    setTemplateChoices,
+    getTemplateVariables
 }
 
 export default apis

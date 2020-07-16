@@ -4,6 +4,8 @@ const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const _ = require('lodash')
+const Liquid = require('liquid')
+const engine = new Liquid.Engine()
 
 let { mongoose } = require('./db/mongoose')
 let { Shop } = require('./models/shop')
@@ -56,6 +58,53 @@ app.post('/whatsappInfo', (req, res) => {
     }, (err) => {
         res.status(404).send(err)
     })
+})
+
+app.post('/templateChoices', (req, res) => {
+    let templates = {
+        templateChoices: {
+            orderDelivered: req.body.templateChoicesFromClient.orderDeliveredSelection,
+            orderConfirmed: req.body.templateChoicesFromClient.orderConfirmedSelection,
+            abandonedCart: req.body.templateChoicesFromClient.abandonedCartSelection,
+            paymentConfirmation: req.body.templateChoicesFromClient.paymentConfirmationSelection
+        }
+    }
+
+    let filter = {_id: req.body.shop}
+
+    Shop.findOneAndUpdate(filter, templates, {new: true}).then((doc) => {
+        console.log(doc)
+        res.status(200).send(doc)
+    }, (err) => {
+        res.status(404).send(err)
+    })
+})
+
+app.post('/templateText', (req, res) => {
+    // console.log('POST templateText')
+   
+    let templateText = req.body.templateText
+
+    engine
+        .parse(templateText)
+        .then((template) => {
+            if(template.root.nodelist.length > 1) {
+                let variables = []
+
+                for(var item of template.root.nodelist) {
+                    if(item.name) {
+                        variables.push(item.name)
+                    }
+                }
+                console.log(variables)
+
+                res.status(200).json(variables)
+            } else {
+                console.log('no variables')
+
+                res.status(200).json([])
+            }
+        })
 })
 
 app.listen(8000, () => {

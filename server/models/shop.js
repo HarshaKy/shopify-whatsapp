@@ -18,6 +18,12 @@ const Shop = mongoose.model('Shop', {
     whatsappCredentials: {
         whatsappNumber: {type: String},
         whatsappApiKey: {type: String}
+    },
+    templateChoices: {
+        orderDelivered: {type: String},
+        orderConfirmed: {type: String},
+        abandonedCart: {type: String},
+        paymentConfirmation: {type: String}
     }
 })
 

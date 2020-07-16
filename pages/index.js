@@ -26,16 +26,16 @@ class Index extends React.Component {
         }
     }
 
-    handleNavigation = (component) => {
-        this.setState({ componentsToRender: { [component]: true }})
+    handleNavigation = async (component) => {
+        await this.setState({ componentsToRender: { [component]: true }})
         console.log(this.state)
     }
 
     render() {
         // choose what to render
-        console.log(this.state)
+        // console.log(this.state)
         let itemToRender
-        console.log('hello from index', this.props)
+        // console.log('hello from index', this.props)
         if (!this.props.shop.shopDb.whatsappCredentials) {
             itemToRender = <WhatsappInformation shop={this.props.shop.shopDb}/>
         } else if (this.state.componentsToRender.home) {
@@ -61,19 +61,23 @@ class Index extends React.Component {
                             items={[
                                 {
                                     label: 'Home',
-                                    onClick: () => this.handleNavigation('home')
+                                    onClick: () => this.handleNavigation('home'),
+                                    selected: this.state.home
                                 },
                                 {
                                     onClick: () => this.handleNavigation('templatePicker'),
-                                    label: 'Template Picker'
+                                    label: 'Template Picker',
+                                    selected: this.state.templatePicker
                                 },
                                 {
                                     onClick: () => this.handleNavigation('broadcastHistory'),
-                                    label: 'Broadcast History'
+                                    label: 'WhatsApp Broadcast',
+                                    selected: this.state.broadcastHistory
                                 },
                                 {
                                     onClick: () => this.handleNavigation('whatsappInfo'),
-                                    label: 'WhatsApp Details'
+                                    label: 'WhatsApp Details',
+                                    selected: this.state.whatsappInfo
                                 }
                             ]}
                         />

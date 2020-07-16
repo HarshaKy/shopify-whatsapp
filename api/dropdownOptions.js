@@ -42,4 +42,77 @@ const paymentConfirmation = [
     }
 ]
 
-module.exports = { orderDelivered, orderConfirmed, abandonedCart, paymentConfirmation }
+const events = [
+    {
+        label: 'Order Shipped',
+        value: 'orderShipped'
+    },
+    {
+        label: 'Checkout Complete',
+        value: 'checkoutComplete'
+    }
+]
+
+const templates = [
+    {
+        label: 'checkout1',
+        value: 'checkout1',
+        text: 'Hey {{name}}. Your checkout process has been completed successfully. Your order ID is {{orderid}}',
+        event: 'checkoutComplete'
+    },
+    {
+        label: 'checkout2',
+        value: 'checkout2',
+        text: 'Your checkout process has been completed successfully. Your order ID is {{orderid}}.',
+        event: 'checkoutComplete'
+    },
+    {
+        label: 'shipped1',
+        value: 'shipped1',
+        text: 'Hey {{name}}. Your order with order ID {{orderid}} has been shipped. Our delivery executive will contact you at {{phone}} before delivering.',
+        event: 'orderShipped'
+    },
+    {
+        label: 'shipped2',
+        value: 'shipped2',
+        text: 'Hey {{name}}. Your order with order ID {{orderid}} has been shipped.',
+        event: 'orderShipped'
+    }
+]
+
+const shopifyFields = [
+    {
+        label: 'name',
+        value: 'name'
+    },
+    {
+        label: 'orderid',
+        value: 'orderid'
+    },
+    {
+        label: 'address',
+        value: 'address'
+    },
+    {
+        label: 'phone',
+        value: 'phone'
+    }
+]
+
+const getTemplatesForEvent = (event) => {
+    var templatesFound = templates.filter(function(template) {
+        return template.event == event
+    })
+
+    return templatesFound
+}
+
+const getTemplateText = (templateName) => {
+    var templateFound = templates.filter(function(template) {
+        return template.value == templateName
+    })
+
+    return templateFound[0].text
+}
+
+module.exports = { orderDelivered, orderConfirmed, abandonedCart, paymentConfirmation, events, templates, shopifyFields, getTemplatesForEvent, getTemplateText }
