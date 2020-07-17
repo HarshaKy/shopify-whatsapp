@@ -104,6 +104,23 @@ export const setEventTemplate = (data, shopId) => {
     })
 }
 
+export const insertValueInTemplate = (templateText, parameters) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            api.post('/insertValueInTemplate', {
+                templateText,
+                parameters
+            }).then((res) => {
+                resolve(res)
+            }, (err) => {
+                reject(err)
+            })
+        } catch (error) {
+            reject(error)
+        }
+    })
+}
+
 const apis = {
     getHello,
     setWhatsappInfo,
@@ -111,7 +128,8 @@ const apis = {
     createShop,
     setTemplateChoices,
     getTemplateVariables,
-    setEventTemplate
+    setEventTemplate,
+    insertValueInTemplate
 }
 
 export default apis

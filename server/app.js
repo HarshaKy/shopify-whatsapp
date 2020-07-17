@@ -10,6 +10,7 @@ const engine = new Liquid.Engine()
 let { mongoose } = require('./db/mongoose')
 let { Shop } = require('./models/shop')
 let { EventsTemplates } = require('./models/EventsTemplates')
+const { result } = require('lodash')
 
 var app = express()
 app.use(cors())
@@ -106,6 +107,25 @@ app.post('/templateText', (req, res) => {
                 res.status(200).json([])
             }
         })
+})
+
+app.post('/insertValueInTemplate', (req, res) => {
+    let templateText = req.body.templateText
+    let parameters = req.body.parameters
+
+    console.log(req.body.parameters)
+
+    engine
+        .parse(templateText)
+        .then((template) => {
+            template.render(parameters)
+                .then((result) => {
+                    console.log(result)
+                    res.status(200).send(result)
+                })
+        })
+
+    // console.log(req.body.parameters)
 })
 
 app.post('/eventTemplate', async (req, res) => {

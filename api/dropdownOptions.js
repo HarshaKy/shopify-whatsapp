@@ -99,6 +99,72 @@ const shopifyFields = [
     }
 ]
 
+const userGroups = [
+    {
+        label: 'Recurrent Users',
+        value: 'recurrent'
+    },
+    {
+        label: 'Not active for over a month',
+        value: 'notActiveMonth'
+    },
+    {
+        label: 'Ordered in the past month',
+        value: 'orderedPastMonth'
+    }
+]
+
+const broadcastTemplates = [
+    {
+        label: 'weeklyNewsLetter',
+        value: 'weeklyNewsLetter',
+        text: 'Here is the latest news from this week.'
+    },
+    {
+        label: 'offer1',
+        value: 'offer1',
+        text: 'Offers from {{startDate}} to {{endDate}}'
+    },
+    {
+        label: 'sale',
+        value: 'sale',
+        text: 'Summer sale starts from {{date}}'
+    }
+]
+
+const users = [
+    {
+        label: 'Adam',
+        value: 'Adam',
+        userGroup: 'recurrent'
+    },
+    {
+        label: 'Jonas',
+        value: 'Jonas',
+        userGroup: 'recurrent'
+    },
+    {
+        label: 'Martha',
+        value: 'Martha',
+        userGroup: 'notActiveMonth'
+    },
+    {
+        label: 'Noah',
+        value: 'Noah',
+        userGroup: 'notActiveMonth'
+    },
+    {
+        label: 'Hans',
+        value: 'Hans',
+        userGroup: 'orderedPastMonth'
+    },
+    {
+        label: 'Chris',
+        value: 'Chris',
+        userGroup: 'orderedPastMonth'
+    }
+]
+
 const getTemplatesForEvent = (event) => {
     var templatesFound = templates.filter(function(template) {
         return template.event == event
@@ -115,4 +181,35 @@ const getTemplateText = (templateName) => {
     return templateFound[0].text
 }
 
-module.exports = { orderDelivered, orderConfirmed, abandonedCart, paymentConfirmation, events, templates, shopifyFields, getTemplatesForEvent, getTemplateText }
+const getUsersForUserGroup = (userGroup) => {
+    var usersFound = users.filter(function(user) {
+        return user.userGroup == userGroup
+    })
+
+    return usersFound
+}
+
+const getBroadcastTemplateText = (broadcastName) => {
+    var broadcastFound = broadcastTemplates.filter(function(broadcast) {
+        return broadcast.value == broadcastName
+    })
+
+    return broadcastFound[0].text
+}
+
+module.exports = { 
+    orderDelivered,
+    orderConfirmed, 
+    abandonedCart, 
+    paymentConfirmation, 
+    events, 
+    templates, 
+    shopifyFields, 
+    users,
+    userGroups,
+    broadcastTemplates,
+    getTemplatesForEvent, 
+    getTemplateText, 
+    getUsersForUserGroup,
+    getBroadcastTemplateText
+}

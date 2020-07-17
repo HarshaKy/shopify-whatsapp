@@ -5,7 +5,7 @@ import { Page, Card, Navigation, Frame } from '@shopify/polaris'
 import api from '../api'
 import TemplatePicker from '../components/template-picker'
 import SideNavigation from '../components/Navigation'
-import BroadcastHistory from '../components/broadcast-history'
+import Broadcast from '../components/broadcast'
 import { orderDelivered } from '../api/dropdownOptions'
 
 
@@ -20,7 +20,7 @@ class Index extends React.Component {
             componentsToRender: {
                 home: false,
                 templatePicker: false,
-                broadcastHistory: false,
+                broadcast: false,
                 whatsappInfo: false
             }
         }
@@ -43,8 +43,8 @@ class Index extends React.Component {
         } else if (this.state.componentsToRender.templatePicker) {
             console.log(orderDelivered)
             itemToRender = <TemplatePicker shop={this.props.shop.shopDb} />
-        } else if (this.state.componentsToRender.broadcastHistory) {
-            itemToRender = <BroadcastHistory shop={this.props.shop.shopDb}/>
+        } else if (this.state.componentsToRender.broadcast) {
+            itemToRender = <Broadcast shop={this.props.shop.shopDb}/>
         } else if (this.state.componentsToRender.whatsappInfo) {
             itemToRender = <WhatsappInformation shop={this.props.shop.shopDb} />
         } 
@@ -70,9 +70,9 @@ class Index extends React.Component {
                                     selected: this.state.templatePicker
                                 },
                                 {
-                                    onClick: () => this.handleNavigation('broadcastHistory'),
+                                    onClick: () => this.handleNavigation('broadcast'),
                                     label: 'WhatsApp Broadcast',
-                                    selected: this.state.broadcastHistory
+                                    selected: this.state.broadcast
                                 },
                                 {
                                     onClick: () => this.handleNavigation('whatsappInfo'),
